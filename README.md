@@ -62,10 +62,10 @@ Pipeline built in **LangFlow (DataStax Astra)**:
   - Simple Python entry script that demonstrates how vitals would be passed into the LangFlow + Granite pipeline.  
   - When run locally, prints a demo explanation and points to the LangFlow deployment.
 
-- `your_hackthon_problemstatement.pdf`  
+- `Problem statement Bengaluru hackathon.docx`  
   - Original hackathon problem statement for “Intelligent Patient Vital Monitoring and Alert System”.
 
-- `your_projectpresentation.pptx`  
+- `Hackathon Project Presentation Final Copy.pptx`  
   - Slide deck explaining need, architecture, components used, screenshots, results, and future scope.
 
 > **Note:**  
