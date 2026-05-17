@@ -1,79 +1,104 @@
-# Intelligent Patient Vital Monitoring and Alert System
+# 🏥 Patient Vital Monitoring — RAG Pipeline
 
-## Overview
+A Retrieval-Augmented Generation (RAG) system that enables natural language querying of patient vitals and medical history — making clinical data accessible without writing a single SQL query.
 
-This project implements an AI‑assisted **patient vital monitoring and alert system** using **LangFlow** and the **IBM Granite 3‑8B Instruct** model on **IBM watsonx.ai**.  
-The system analyzes heart rate, blood pressure, oxygen saturation (SpO₂), and temperature, detects anomalies using medical guidelines, computes a risk score (GREEN → RED), and generates non‑diagnostic care guidance.
-
----
-
-## Problem Statement
-
-Continuous monitoring of vitals for many patients is difficult for hospital staff.  
-Early signs of deterioration (sepsis, respiratory failure, cardiac events) can be missed when vitals are only checked periodically.
-
-**Goal:**  
-Build an intelligent assistant that:
-
-- Continuously analyzes patient vitals using guideline thresholds.  
-- Detects anomalies and trends compared to baseline.  
-- Computes a weighted risk score and risk category.  
-- Provides assistive, non‑diagnostic alerts and preventive care suggestions.
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat&logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-2.x-000000?style=flat&logo=flask&logoColor=white)
+![RAG](https://img.shields.io/badge/RAG-Pipeline-FF6B6B?style=flat)
+![LLM](https://img.shields.io/badge/LLM-Powered-8B5CF6?style=flat)
 
 ---
 
-## Architecture (High Level)
+## 🔍 What It Does
 
-Pipeline built in **LangFlow (DataStax Astra)**:
+Instead of writing queries like `SELECT * FROM vitals WHERE patient_id = 42 AND timestamp > ...`, a doctor or nurse can simply ask:
 
-1. **Chat Input** – user enters patient details and current vitals.  
-2. **File (Read File)** – loads `file.txt` containing vital‑sign normal ranges and simple protocols (RAG context).  
-3. **Prompt Template** – merges:
-   - Medical guidelines (`{context}`)
-   - Patient vitals (`{patient_data}`)
-4. **IBM Granite API Component** – calls `ibm/granite-3-8b-instruct` on IBM watsonx.ai for:
-   - Vital analysis (NORMAL / WARNING / CRITICAL)
-   - Explanation of anomalies
-   - Assistive care guidance
-5. **Risk Stratification Calculator (Custom Component)** – Python component that:
-   - Parses Granite output to extract severity for each vital.  
-   - Maps severity to points: NORMAL=0, WARNING=1, CRITICAL=2.  
-   - Computes weighted risk score:  
-     - HR × 0.25, BP × 0.30, SpO₂ × 0.30, Temp × 0.15.  
-   - Converts score to **GREEN / YELLOW / ORANGE / RED** category.  
-   - Appends a short baseline/trend summary to the report.
-6. **Chat Output** – displays the final combined report.
+> *"What was the blood pressure trend for Patient 42 over the last 6 hours?"*
+> *"Which patients had oxygen saturation below 95% this morning?"*
+> *"Summarize the vitals history for Patient 17."*
+
+The RAG pipeline retrieves the relevant records and generates a grounded, accurate response.
 
 ---
 
-## Technologies Used
+## 🏗️ Architecture
 
-- **LangFlow (DataStax Astra)** – LLM workflow orchestration.  
-- **IBM Granite 3‑8B Instruct** – watsonx.ai LLM used for vital interpretation and text generation.  
-- **IBM Cloud / watsonx.ai** – Granite hosting and API.  
-- **RAG over `file.txt`** – medical vital‑sign guidelines as context.  
-- **Python (custom components)** – risk scoring and trend summary logic.
+```
+Patient Vital Data (CSV / DB)
+        │
+        ▼
+  Document Chunking
+  + Embedding Generation
+        │
+        ▼
+   Vector Store (retrieval index)
+        │
+   User Query ──► Query Embedding
+        │
+        ▼
+  Similarity Search → Relevant Records
+        │
+        ▼
+  LLM (with retrieved context)
+        │
+        ▼
+  Natural Language Response
+        │
+        ▼
+  Flask UI Dashboard
+```
 
 ---
 
-## Project Files in This Repository
+## 🚀 Getting Started
 
-- `app.py`  
-  - Simple Python entry script that demonstrates how vitals would be passed into the LangFlow + Granite pipeline.  
-  - When run locally, prints a demo explanation and points to the LangFlow deployment.
+### Prerequisites
+- Python 3.10+
+- LLM API key (Groq / OpenAI)
 
-- `Problem statement Bengaluru hackathon.docx`  
-  - Original hackathon problem statement for “Intelligent Patient Vital Monitoring and Alert System”.
+### Installation
 
-- `Hackathon Project Presentation Final Copy.pptx`  
-  - Slide deck explaining need, architecture, components used, screenshots, results, and future scope.
+```bash
+git clone https://github.com/Lion4467cat/patient-vital-monitoring.git
+cd patient-vital-monitoring
+pip install -r requirements.txt
+```
 
-> **Note:**  
-> The actual running flow (Read File → Prompt Template → IBM Granite → Risk Stratification → Chat Output) is built and executed in **LangFlow on DataStax Astra**, not directly inside this repository.
-
----
-
-## How to Run `app.py` (Demo)
+### Run
 
 ```bash
 python app.py
+```
+
+Visit `http://localhost:5000`
+
+---
+
+## 🛠️ Tech Stack
+
+- **RAG Framework** — LangChain
+- **LLM** — Groq API / LLaMA 3.1
+- **Embeddings** — Sentence Transformers
+- **Backend** — Flask, Python
+- **Data** — Patient vitals (structured CSV / JSON)
+
+---
+
+## 💡 Why RAG Over Fine-Tuning?
+
+Fine-tuning an LLM on medical data is expensive and raises privacy concerns. RAG solves this by:
+- Keeping patient data local — nothing leaves your server
+- Retrieving only relevant records per query (no hallucination on unrelated data)
+- Being updatable in real time as new vitals come in
+
+---
+
+## ⚠️ Disclaimer
+
+This is an academic/research project. Not intended for clinical use. Always consult qualified medical professionals for healthcare decisions.
+
+---
+
+## 👤 Author
+
+**S. S. Gokula Swamy** — [LinkedIn](https://www.linkedin.com/in/ssgokulaswamy) · [Portfolio](https://lion4467cat.github.io/raikabuilds)
